@@ -20,7 +20,7 @@
 <hr>
 @isset($fornecedores)
 
-    @foreach($fornecedores as $indice => $fornecedor) <!-- Aqui o foreach cria uma cópia($fornecedor) do array original($fornecedores) -->
+    @forelse($fornecedores as $indice => $fornecedor) <!-- Aqui o foreach cria uma cópia($fornecedor) do array original($fornecedores) -->
         Fornecedor: {{$fornecedor['nome']}}
         <br>
         Status: {{$fornecedor['status']}}
@@ -43,5 +43,7 @@
                 Estado não idenetificado
         @endswitch
         <hr>
-    @endforeach
+    @empty
+        Não existem fornecedores cadastrados
+    @endforelse
 @endisset
