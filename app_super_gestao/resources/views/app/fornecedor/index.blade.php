@@ -13,7 +13,7 @@
     - array[]
     - $var
     */
-    $const = 1;
+    $const = 2;
 @endphp
 {{--@dd($fornecedores)--}}
 {{--UNLESS executa se o retorno for FALSE--}}
@@ -25,10 +25,20 @@
     Status: {{$fornecedores[$const]['status']}}
     <br>
     CNPJ: {{$fornecedores[$const]['cnpj'] ?? 'Dado não foi preenchido'}}
-    <!--
-        $variavel testada não estiver definida (isset)
-        ou
-        $variável testada possuir o valor NULL
-    -->
     <br>
+    Telefone: ({{$fornecedores[$const]['ddd'] ?? '00'}}) {{$fornecedores[$const]['telefone'] ?? ''}}
+    <br>
+    @switch($fornecedores[$const]['ddd'])
+        @case ('11')
+            São Paulo - SP
+            @break
+        @case ('85')
+            Fortaleza - CE 
+            @break
+        @case ('32')
+            Juiz de Fora - MG
+            @break
+        @default
+            Estado não idenetificado
+    @endswitch
 @endisset
