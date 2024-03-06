@@ -21,13 +21,16 @@
 @isset($fornecedores)
 
     @forelse($fornecedores as $indice => $fornecedor) <!-- Aqui o foreach cria uma cópia($fornecedor) do array original($fornecedores) -->
-        Fornecedor: @{{$fornecedor['nome']}}
+        {{-- @dd($loop) --}}
+        Iteração atual: {{ $loop->iteration }} <!-- Apenas funciona para o foreach e forelse -->
         <br>
-        Status: @{{$fornecedor['status']}}
+        Fornecedor: {{$fornecedor['nome']}}
         <br>
-        CNPJ: @{{$fornecedor['cnpj'] ?? 'Dado não foi preenchido'}}
+        Status: {{$fornecedor['status']}}
         <br>
-        Telefone: (@{{$fornecedor['ddd'] ?? '00'}}) @{{$fornecedor['telefone'] ?? ''}}
+        CNPJ: {{$fornecedor['cnpj'] ?? 'Dado não foi preenchido'}}
+        <br>
+        Telefone: ({{$fornecedor['ddd'] ?? '00'}}) {{$fornecedor['telefone'] ?? ''}}
         <br>
         @switch($fornecedor['ddd'])
             @case ('11')
@@ -42,8 +45,20 @@
             @default
                 Estado não idenetificado
         @endswitch
+        <br>
+        
+        @if($loop->first)
+            [-> Primeira iteração do loop]
+        @endif
+
+        @if($loop->last)
+            [-> Última iteração do loop]
+            <hr>
+            Total de registros: {{ $loop->count }}
+        @endif
         <hr>
     @empty
         Não existem fornecedores cadastrados
     @endforelse
 @endisset
+
