@@ -21,13 +21,13 @@
 @isset($fornecedores)
 
     @forelse($fornecedores as $indice => $fornecedor) <!-- Aqui o foreach cria uma cópia($fornecedor) do array original($fornecedores) -->
-        Fornecedor: {{$fornecedor['nome']}}
+        Fornecedor: @{{$fornecedor['nome']}}
         <br>
-        Status: {{$fornecedor['status']}}
+        Status: @{{$fornecedor['status']}}
         <br>
-        CNPJ: {{$fornecedor['cnpj'] ?? 'Dado não foi preenchido'}}
+        CNPJ: @{{$fornecedor['cnpj'] ?? 'Dado não foi preenchido'}}
         <br>
-        Telefone: ({{$fornecedor['ddd'] ?? '00'}}) {{$fornecedor['telefone'] ?? ''}}
+        Telefone: (@{{$fornecedor['ddd'] ?? '00'}}) @{{$fornecedor['telefone'] ?? ''}}
         <br>
         @switch($fornecedor['ddd'])
             @case ('11')
