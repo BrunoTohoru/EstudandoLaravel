@@ -13,7 +13,7 @@
     - array[]
     - $var
     */
-    $const = 0;
+    $const = 1;
 @endphp
 {{--@dd($fornecedores)--}}
 {{--UNLESS executa se o retorno for FALSE--}}
@@ -24,11 +24,11 @@
     <br>
     Status: {{$fornecedores[$const]['status']}}
     <br>
-    @isset($fornecedores[$const]['cnpj'])
-        CNPJ: {{$fornecedores[$const]['cnpj']}}
-        @empty($fornecedores[$const]['cnpj'])
-            - Vazio
-        @endempty
-    @endisset
+    CNPJ: {{$fornecedores[$const]['cnpj'] ?? 'Dado não foi preenchido'}}
+    <!--
+        $variavel testada não estiver definida (isset)
+        ou
+        $variável testada possuir o valor NULL
+    -->
     <br>
 @endisset
