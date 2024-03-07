@@ -26,6 +26,10 @@ class AlterFornecedoresNovasColunas extends Migration
      */
     public function down()
     {
-        //
+        // para remover colunas
+        Schema::table('fornecedores', function (Blueprint $table) {
+            //$table->dropColumn('uf');
+            $table->dropColumn(['uf', 'email']);
+        });
     }
 }
