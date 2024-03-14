@@ -36,7 +36,14 @@ class ContatoController extends Controller
         $contato->create($request->all());
         */
         // $contato->save();
-        return view('site.contato');
+
+        // simulando motivo_contato do banco de dados
+        $motivo_contatos =[
+            1 => 'dúvida',
+            2 => 'elogio',
+            3 => 'reclamação'
+        ];
+        return view('site.contato', ['titulo' => 'Contato (teste)', 'motivo_contatos' => $motivo_contatos]);
     }
 
     public function salvar(Request $request){
