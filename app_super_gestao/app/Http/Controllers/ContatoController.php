@@ -48,7 +48,7 @@ class ContatoController extends Controller
         $this->validate($request, [
             'nome' => 'required|min:3|max:40', // nomes com no mínimo 3 char e máximo 40 char
             'telefone' => 'required',
-            'email' => 'required',
+            'email' => 'email',
             'motivo_contato' => 'required',
             'mensagem' => 'required|max:2000'
         ]);
