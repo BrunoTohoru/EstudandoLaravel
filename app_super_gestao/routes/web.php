@@ -60,6 +60,9 @@ Route::middleware(['autenticacao:padrao, visitante'])
 
         // Produtos
         Route::resource('produto','ProdutoController');
+
+        // Produto Detalhes
+        Route::resource('produto-detalhe','ProdutoDetalheController');
     }
     );
 
