@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Tarefa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TarefaController extends Controller
 {
+    public function __construct(){
+        $this->middleware("auth");
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +18,12 @@ class TarefaController extends Controller
      */
     public function index()
     {
-        //
+    
+        $id = Auth::user()->id;
+        $nome = Auth::user()->name;
+        $email = Auth::user()->email;
+        return "ID: $id | Nome: $nome | Email: $email ";
+    
     }
 
     /**
