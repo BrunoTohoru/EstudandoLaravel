@@ -42,6 +42,18 @@ class TarefaController extends Controller
      */
     public function store(Request $request)
     {
+        $regras = [
+            'tarefa' => 'required|max:200',
+            'data_limite_conclusao' => 'required'
+        ];
+
+        $feedback = [
+            'required' => 'O campo :attribute é obrigatório.',
+            'tarefa.max' => 'O campo deve ter no máximo 200 caracteres.'
+        ];
+
+        $this->validate($request, $regras, $feedback);
+
         $dados = $request->all('tarefa', 'data_limite_conclusao');
         $dados['user_id'] = auth()->user()->id;
         $tarefa = Tarefa::create($dados);
