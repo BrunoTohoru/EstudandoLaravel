@@ -20,7 +20,7 @@ class TarefaController extends Controller
     public function index()
     {
         $user_id = auth()->user()->id;
-        $tarefas = Tarefa::where('user_id', $user_id)->get();
+        $tarefas = Tarefa::where('user_id', $user_id)->paginate(5);
         return view('tarefa.index', ['tarefas' => $tarefas]);
     }
 
@@ -81,7 +81,11 @@ class TarefaController extends Controller
      */
     public function edit(Tarefa $tarefa)
     {
-        //
+        if($tarefa->user_id == auth()->user()->id){
+            return view('tarefa.edit', ['tarefa' => $tarefa ]);
+        }
+        
+        return view('acesso-negado'); //SEGURANÇA! ajuda a um usuário logado não acessar à tarefas de outros usuários.
     }
 
     /**
@@ -93,9 +97,27 @@ class TarefaController extends Controller
      */
     public function update(Request $request, Tarefa $tarefa)
     {
-        //
-    }
+        $regras = [
+            'tarefa' => 'required|max:200',
+            'data_limite_conclusao' => 'required'
+        ];
 
+        $feedback = [
+            'required' => 'O campo :attribute é obrigatório.',
+            'tarefa.max' => 'O campo deve ter no máximo 200 caracteres.'
+        ];
+
+        $this->validate($request, $regras, $feedback);
+
+        if($tarefa->user_id == auth()->user()->id){
+            $tarefa->update($request->all());
+            return redirect()->route('tarefa.show', ['tarefa' => $tarefa->id ]);
+        }
+        
+        return view('acesso-negado');
+        
+    }
+    
     /**
      * Remove the specified resource from storage.
      *
@@ -104,6 +126,10 @@ class TarefaController extends Controller
      */
     public function destroy(Tarefa $tarefa)
     {
-        //
+        if($tarefa->user_id == auth()->user()->id){
+            $tarefa->delete();
+            return redirect()->route('tarefa.index');
+        }
+        return view('acesso-negado');
     }
 }
