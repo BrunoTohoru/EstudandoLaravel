@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\TarefasExport;
 use Mail;
 use App\Mail\NovaTarefaMail;
 use App\Models\Tarefa;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use PDF;
 
 class TarefaController extends Controller
 {
@@ -131,5 +134,23 @@ class TarefaController extends Controller
             return redirect()->route('tarefa.index');
         }
         return view('acesso-negado');
+    }
+
+    public function exportacao($extensao)
+    {
+        if (in_array($extensao, ['xlsx', 'csv', 'pdf'])){
+            return Excel::download(new TarefasExport, 'lista_de_tarefas.'.$extensao);
+        }
+        return redirect()->route('tarefa.index');
+    }
+
+    public function exportar()
+    {
+        $tarefas = auth()->user()->tarefas()->get();
+        $pdf = PDF::loadView('tarefa.pdf', ['tarefas' => $tarefas]);
+
+        $pdf->setPaper('a4', 'landscape'); // 1o par -> tipo de papel: a4, letter / 2o par -> orientação: landscape (paisagem), portrait (retrato)
+        //return $pdf->download('lista_de_tarefas.pdf');
+        return $pdf->stream('lista_de_tarefas.pdf');
     }
 }
