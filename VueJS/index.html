@@ -8,67 +8,39 @@
     <title>Document</title>
 
     <style>
-        .azul {
-            background-color: blue;
-        }
-        .vermelho {
-            background-color: red;
-        }
-        .verde {
-            background-color: green;
-        }
-        .branco {
-            background-color: white;
-        }
-        .borda {
-            border:1px solid
-        }
-        .div-principal {
-            width: 200px;
-            height: 200px;
-        }
-        .div-comum {
-            width: 50px;
-            height: 50px;
-            display: inline-block;
-        }
+
     </style>
 </head>
 <body>
     <div id="app">
-        <div class="borda div-principal" :class="cor" @mousemove="coordenadas($event)">
-            Cor: {{ cor }}
-            <br>
-            Posição X do Mouse: {{ posicaoX }}
-            <br>
-            Posição Y do Mouse: {{ posicaoY }}
-        </div>
-        <hr>
-        <div @mouseout="mudarCor('branco')">
-            <div @click="mudarCor('verde')" class="borda div-comum" @mouseover="mudarCor('verde')" ></div>
-            <div @click="mudarCor('vermelho')" class="borda div-comum" @mouseover="mudarCor('vermelho')"></div>
-            <div @click="mudarCor('azul')" class="borda div-comum" @mouseover="mudarCor('azul')"></div>
-        </div>
+        <span>Paciente: </span><input type="text" v-model="paciente">
+        <ul>
+            <li v-for="p in lista">{{p.nome}}, {{p.idade}}</li>
+        </ul>
     </div>
 
     <script>
         const vm = new Vue({ // vm = ViewModel
             el: '#app', // # para selecionar por id e . para selecionar por class
             data: {
-                cor: '',
-                posicaoX: 0,
-                posicaoY: 0
+                paciente: '',
+                pacientes: [
+                    {nome: 'Jorge Santana', idade: 32},
+                    {nome: 'Julio Shiotani', idade: 29},
+                    {nome: 'João da Silva', idade: 30},
+                    {nome: 'Joaquina dos Santos', idade: 20},
+                    {nome: 'Jurandir Pinto', idade: 12}
+                ],
+                lista: []
             },
-            methods: {
-                mudarCor(c) {
-                    this.cor = c
-                },
-                coordenadas(e) {
-                    this.posicaoX = e.clientX
-                    this.posicaoY = e.clientY
+            methods: {},
+            computed: {},
+            watch: {
+                paciente(valorNovo){
+                    this.lista = this.pacientes.filter(p => p.nome.match(valorNovo))
                 }
             }
         })
     </script>
 </body>
-</html>
+</html> 
