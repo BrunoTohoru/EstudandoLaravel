@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Marca;
+use App\Repositories\MarcaRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,9 +19,53 @@ class MarcaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $marcas = $this->marca->all();
+        $marcaRepository = new MarcaRepository($this->marca);
+
+        if($request->has('atributos_modelos')){
+            $atributos_modelos = 'modelos:id,'.$request->atributos_modelos;
+            $marcaRepository->selectAtributosRegistrosRelacionados($atributos_modelos);
+        } else {
+            $marcaRepository->selectAtributosRegistrosRelacionados('modelos');
+        }
+
+        if($request->has('filtro')){
+            $marcaRepository->filtro($request->filtro);
+        }
+
+        if($request->has('atributos')) {
+            $atributos = $request->atributos;
+            $marcaRepository->selectAtributos($request->atributos);
+        }
+
+        return $marcaRepository->getResultado();
+        // -----------------------------------------------------------------------------
+
+        $marcas = array();
+
+        if($request->has('atributos_modelos')){
+            $atributos_modelos = $request->atributos_modelos;
+            $marcas = $this->marca->with('modelos:id,'.$atributos_modelos);
+        } else {
+            $marcas = $this->marca->with('modelos');
+        }
+
+        if($request->has('filtro')){
+            $filtros = explode(';', $request->filtro);
+            foreach($filtros as $key => $condicao){
+                $condicoes = explode(':', $condicao);
+                $marcas = $marcas->where($condicoes[0], $condicoes[1], $condicoes[2]);
+            }
+        }
+
+        if($request->has('atributos')) {
+            $atributos = $request->atributos;
+            $marcas = $marcas->selectRaw($atributos)->get();
+            //dd($request->atributos);
+        } else {
+            $marcas = $marcas->get();
+        }
         return response()->json($marcas, 200);
     }
 
@@ -62,7 +107,7 @@ class MarcaController extends Controller
      */
     public function show($id)
     {
-        $marca = $this->marca->find($id);
+        $marca = $this->marca->with('modelos')->find($id);
         if($marca === null){
             return response()->json(['erro' => 'Recurso pesquisado não existe'], 404);
         }
@@ -90,7 +135,6 @@ class MarcaController extends Controller
     public function update(Request $request, $id)
     {
         $marca = $this->marca->find($id);
-
         if($marca === null){
             return response()->json(['erro' => 'Impossível realizar a atualização. O recurso solicitado não existe.'], 404);
         }
@@ -116,11 +160,15 @@ class MarcaController extends Controller
         $imagem = $request->file('imagem');
         $imagem_urn = $imagem->store('imagens', 'public');
 
+        $marca->fill($request->all());
+        $marca->imagem = $imagem_urn;
+        $marca->save();
+        /*
         $marca->update([
             'nome' => $request->nome,
             'imagem' => $imagem_urn
         ]);
- 
+        */
         return response()->json($marca, 200);
     }
 
