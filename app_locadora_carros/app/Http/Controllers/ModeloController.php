@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Modelo;
 use Illuminate\Http\Request;
+use App\Repositories\ModeloRepository;
 
 class ModeloController extends Controller
 {
-    protected $modelo;
     public function __construct(Modelo $modelo) {
         $this->modelo = $modelo;
     }
@@ -20,33 +20,24 @@ class ModeloController extends Controller
      */
     public function index(Request $request)
     {
-        $modelos = array();
+        $modeloRepository = new ModeloRepository($this->modelo);
 
-        if($request->has('atributos_marca')){
-            $atributos_marca = $request->atributos_marca;
-            $modelos = $this->modelo->with('marca:id,'.$atributos_marca);
+        if($request->has('atributos_marca')) {
+            $atributos_marca = 'marca:id,'.$request->atributos_marca;
+            $modeloRepository->selectAtributosRegistrosRelacionados($atributos_marca);
         } else {
-            $modelos = $this->modelo->with('marca');
+            $modeloRepository->selectAtributosRegistrosRelacionados('marca');
         }
 
-        if($request->has('filtro')){
-            $filtros = explode(';', $request->filtro);
-            foreach($filtros as $key => $condicao){
-                $condicoes = explode(':', $condicao);
-                $modelos = $modelos->where($condicoes[0], $condicoes[1], $condicoes[2]);
-            }
+        if($request->has('filtro')) {
+            $modeloRepository->filtro($request->filtro);
         }
 
         if($request->has('atributos')) {
-            $atributos = $request->atributos;
-            $modelos = $modelos->selectRaw($atributos)->get();
-            //dd($request->atributos);
-        } else {
-            $modelos = $modelos->get();
-        }
-        return response()->json($modelos, 200);
-        // all() -> criando um obj de consulta + get() = collection
-        // get() -> modificar a consulta -> collection
+            $modeloRepository->selectAtributos($request->atributos);
+        } 
+
+        return response()->json($modeloRepository->getResultado(), 200);
     }
 
     /**
@@ -186,7 +177,7 @@ class ModeloController extends Controller
         }
 
         //remove o arquivo antigo
-        Storage::disk('public')->delete($modelo->imagem);        
+        Storage::disk('public')->delete($modelo->imagem);
 
         $modelo->delete();
         return response()->json(['msg' => 'O modelo foi removida com sucesso!'], 200);
